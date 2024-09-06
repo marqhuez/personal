@@ -1,0 +1,34 @@
+services:
+    app:
+        build: .
+        ports:
+            - "8000:8000"
+        command: "php artisan serve --host 0.0.0.0"
+        volumes:
+            - .:/var/www/html
+            - vendor:/var/www/html/vendor
+
+    database:
+        image: mysql:8.0
+        restart: always
+        environment:
+            MYSQL_ROOT_PASSWORD: "app"
+            TZ: "Europe/Budapest"
+        ports:
+            - "3307:3306"
+        command: --default-authentication-plugin=mysql_native_password
+        volumes:
+            - database_data:/var/lib/mysql:rw
+
+    phpmyadmin:
+        image: phpmyadmin/phpmyadmin
+        ports:
+            - "8001:80"
+        links:
+            - database
+        environment:
+            - PMA_HOST=database
+
+volumes:
+    database_data:
+    vendor:
