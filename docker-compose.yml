@@ -1,4 +1,14 @@
 services:
+    reverse-proxy:
+        image: traefik:latest
+        command:
+            - "--api.insecure=true"
+            - "--providers.docker"
+        ports:
+            - 80:80
+            - 8080:8080
+        volumes:
+            - /var/run/docker.sock:/var/run/docker.sock
     app:
         build: .
         ports:
@@ -7,6 +17,8 @@ services:
         volumes:
             - .:/var/www/html
             - vendor:/var/www/html/vendor
+        labels:
+            - "traefik.http.routers.personal.rule=Host(`marqhuez.dev`)"
 
     database:
         image: mysql:8.0
@@ -19,15 +31,6 @@ services:
         command: --default-authentication-plugin=mysql_native_password
         volumes:
             - database_data:/var/lib/mysql:rw
-
-    phpmyadmin:
-        image: phpmyadmin/phpmyadmin
-        ports:
-            - "8001:80"
-        links:
-            - database
-        environment:
-            - PMA_HOST=database
 
 volumes:
     database_data:
