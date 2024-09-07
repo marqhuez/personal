@@ -6,6 +6,11 @@ services:
         volumes:
             - .:/var/www/html
             - vendor:/var/www/html/vendor
+        environment:
+            - APP_ENV=local
+            - APP_URL=http://localhost:8000
+            - DB_USERNAME=root
+            - DB_PASSWORD=app
 
     database:
         image: mysql:8.0
