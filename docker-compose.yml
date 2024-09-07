@@ -27,6 +27,9 @@ services:
             - "traefik.http.routers.app.rule=Host(`marqhuez.dev`)"
             - "traefik.http.routers.app.entrypoints=websecure"
             - "traefik.http.routers.app.tls.certresolver=myresolver"
+        deploy:
+            mode: replicated
+            replicas: 2
 
     database:
         image: mysql:8.0
