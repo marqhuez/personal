@@ -119,7 +119,7 @@ export default function Welcome({
 
                                             <div className="pt-3 sm:pt-5 lg:pt-0">
                                                 <h2 className="text-xl font-semibold text-black dark:text-white">
-                                                    Documentation
+                                                    Documentation - Modified
                                                 </h2>
 
                                                 <p className="mt-4 text-sm/relaxed">
