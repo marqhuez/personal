@@ -1,0 +1,62 @@
+services:
+  reverse-proxy:
+    image: traefik:latest
+    command:
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entryPoints.websecure.address=:443"
+      - "--certificatesresolvers.myresolver.acme.tlschallenge=true"
+      - "--certificatesresolvers.myresolver.acme.email=ssl@marksoltesz.hu"
+      - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
+    ports:
+      - 443:443
+      - 8080:8080
+    volumes:
+      - ./letsencrypt:/letsencrypt
+      - /var/run/docker.sock:/var/run/docker.sock
+
+  app:
+    image: ghcr.io/marqhuez/personal:latest
+    command: "php artisan serve --host 0.0.0.0"
+    volumes:
+      - .:/var/www/html
+      - vendor:/var/www/html/vendor
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.app.rule=Host(`marqhuez.dev`)"
+      - "traefik.http.routers.app.entrypoints=websecure"
+      - "traefik.http.routers.app.tls.certresolver=myresolver"
+    deploy:
+      mode: replicated
+      replicas: 2
+
+  database:
+    image: mysql:8.0
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: "app"
+      TZ: "Europe/Budapest"
+    ports:
+      - "3306:3306"
+    command: --default-authentication-plugin=mysql_native_password
+    volumes:
+      - database_data:/var/lib/mysql:rw
+
+  phpmyadmin:
+    image: phpmyadmin
+    restart: always
+    links:
+      - database
+    environment:
+      - PMA_HOST=database
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.phpmyadmin.rule=Host(`pma.marqhuez.dev`)"
+      - "traefik.http.routers.phpmyadmin.entrypoints=websecure"
+      - "traefik.http.routers.phpmyadmin.tls.certresolver=myresolver"
+
+volumes:
+  database_data:
+  vendor:
+  letsencrypt:
