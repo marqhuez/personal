@@ -11,6 +11,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Log in to GitHub Container Registry
+        run: echo "${{ secrets.GH_TOKEN }}" | docker login ghcr.io -u "${{ secrets.GITHUB_ACTOR }}" --password-stdin
+
       - uses: actions/checkout@v4
       - name: Build the Docker image
         run: docker build . -t ghcr.io/marqhuez/personal --push
