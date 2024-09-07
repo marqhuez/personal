@@ -3,22 +3,30 @@ services:
         image: traefik:latest
         command:
             - "--api.insecure=true"
-            - "--providers.docker"
+            - "--providers.docker=true"
+            - "--providers.docker.exposedbydefault=false"
+            - "--entryPoints.websecure.address=:443"
+            - "--certificatesresolvers.myresolver.acme.tlschallenge=true"
+            - "--certificatesresolvers.myresolver.acme.email=ssl@marksoltesz.hu"
+            - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
         ports:
-            - 80:80
+            - 443:443
             - 8080:8080
         volumes:
+            - ./letsencrypt:/letsencrypt
             - /var/run/docker.sock:/var/run/docker.sock
+
     app:
-        build: .
-        ports:
-            - "8000:8000"
+        image: ghcr.io/marqhuez/personal:latest
         command: "php artisan serve --host 0.0.0.0"
         volumes:
             - .:/var/www/html
             - vendor:/var/www/html/vendor
         labels:
-            - "traefik.http.routers.personal.rule=Host(`marqhuez.dev`)"
+            - "traefik.enable=true"
+            - "traefik.http.routers.app.rule=Host(`marqhuez.dev`)"
+            - "traefik.http.routers.app.entrypoints=websecure"
+            - "traefik.http.routers.app.tls.certresolver=myresolver"
 
     database:
         image: mysql:8.0
@@ -27,7 +35,7 @@ services:
             MYSQL_ROOT_PASSWORD: "app"
             TZ: "Europe/Budapest"
         ports:
-            - "3307:3306"
+            - "3306:3306"
         command: --default-authentication-plugin=mysql_native_password
         volumes:
             - database_data:/var/lib/mysql:rw
@@ -35,3 +43,4 @@ services:
 volumes:
     database_data:
     vendor:
+    letsencrypt:
