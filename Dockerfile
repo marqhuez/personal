@@ -13,4 +13,4 @@ RUN docker-php-ext-install pdo pdo_mysql && docker-php-ext-enable pdo_mysql
 
 RUN composer install
 
-EXPOSE 8000
+ENTRYPOINT ["php", "artisan", "serve", "--host", "0.0.0.0"]
