@@ -264,7 +264,7 @@ export default function Welcome({
                                     <div className="pt-3 sm:pt-5">
                                         <h2 className="text-xl font-semibold text-black dark:text-white">
                                             Vibrant Ecosystem - Modified -
-                                            Modified Again
+                                            Modified Again - And Again
                                         </h2>
 
                                         <p className="mt-4 text-sm/relaxed">
