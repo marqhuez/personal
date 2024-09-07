@@ -1,4 +1,14 @@
 services:
+  watchtower:
+    image: containrrr/watchtower
+    command:
+      - "--label-enable"
+      - "--interval"
+      - "30"
+      - "--rolling-restart"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+
   reverse-proxy:
     image: traefik:latest
     command:
@@ -27,6 +37,7 @@ services:
       - "traefik.http.routers.app.rule=Host(`marqhuez.dev`)"
       - "traefik.http.routers.app.entrypoints=websecure"
       - "traefik.http.routers.app.tls.certresolver=myresolver"
+      - "com.centurylinklabs.watchtower.enable=true"
     deploy:
       mode: replicated
       replicas: 2
