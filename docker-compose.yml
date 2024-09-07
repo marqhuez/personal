@@ -48,6 +48,11 @@ services:
         environment:
             - PMA_ARBITRARY=1
             - PMA_HOST=database
+        labels:
+            - "traefik.enable=true"
+            - "traefik.http.routers.phpmyadmin.rule=Host(`pma.marqhuez.dev`)"
+            - "traefik.http.routers.phpmyadmin.entrypoints=websecure"
+            - "traefik.http.routers.phpmyadmin.tls.certresolver=myresolver"
 
 volumes:
     database_data:
