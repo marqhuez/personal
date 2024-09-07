@@ -46,7 +46,6 @@ services:
         links:
             - database
         environment:
-            - PMA_ARBITRARY=1
             - PMA_HOST=database
         labels:
             - "traefik.enable=true"
